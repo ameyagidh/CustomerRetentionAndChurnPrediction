@@ -8,6 +8,8 @@ Churn probability
 
 <img width="1143" alt="Screenshot 2024-03-19 at 10 53 09 AM" src="https://github.com/ameyagidh/CustomerRetentionAndChurnPrediction/assets/65457905/b5b3f056-9a58-4d7a-8154-1bb50fdce47e">
 
+<img width="1496" alt="Screenshot 2024-03-19 at 11 53 19 AM" src="https://github.com/ameyagidh/CustomerRetentionAndChurnPrediction/assets/65457905/63753a5f-e6da-4ae2-b83a-6463fe7e0f34">
+
 **Project Structure:**
 1. **Data Loading and Preprocessing:** 
    - Data files are read using the `read_data` function provided in the `data_utils.py` module.
