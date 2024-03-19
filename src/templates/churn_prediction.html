@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction Results</title>
+</head>
+<body>
+    <h1>Churn Prediction Results</h1>
+    {% if errorDetails %}
+        <p>Error: {{ errorDetails }}</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Surname</th>
+                    <th>CreditScore</th>
+                    <th>Geography</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Tenure</th>
+                    <th>Balance</th>
+                    <th>NumOfProducts</th>
+                    <th>HasCrCard</th>
+                    <th>IsActiveMember</th>
+                    <th>EstimatedSalary</th>
+                    <th>Probability of Churn</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in result %}
+                    <tr>
+                        <td>{{ entry.Surname }}</td>
+                        <td>{{ entry.CreditScore }}</td>
+                        <td>{{ entry.Geography }}</td>
+                        <td>{{ entry.Gender }}</td>
+                        <td>{{ entry.Age }}</td>
+                        <td>{{ entry.Tenure }}</td>
+                        <td>{{ entry.Balance }}</td>
+                        <td>{{ entry.NumOfProducts }}</td>
+                        <td>{{ entry.HasCrCard }}</td>
+                        <td>{{ entry.IsActiveMember }}</td>
+                        <td>{{ entry.EstimatedSalary }}</td>
+                        <td>{{ entry.pred_probabilities }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>

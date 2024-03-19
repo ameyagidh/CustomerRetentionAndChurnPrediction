@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction Input Form</title>
+</head>
+<body>
+    <h1>Churn Prediction Input Form</h1>
+    <textarea id="input_data" rows="10" cols="50" placeholder="Enter JSON data"></textarea><br>
+    <button onclick="submitData()">Submit</button>
+
+    <script>
+        function submitData() {
+            const data = document.getElementById('input_data').value;
+            fetch('/churn-prediction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: JSON.parse(data)})
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction Results</title>
+    <style>
+        /* Add your CSS styling here */
+        /* For example: */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Churn Prediction Results</h1>
+    <div>
+        {% if errorDetails %}
+            <p>Error: {{ errorDetails }}</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Probability of Churn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in result %}
+                        <tr>
+                            <td>{{ entry.customer_id }}</td>
+                            <td>{{ entry.probability_of_churn }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>
