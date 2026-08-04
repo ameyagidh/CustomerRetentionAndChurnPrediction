@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Churn MLOps Dashboard</title>
+<style>
+  :root {
+    --surface: #0b0d12; --elevated: #151922; --border: #232936;
+    --primary: #6366f1; --accent: #8b5cf6; --success: #10b981;
+    --warn: #f59e0b; --danger: #ef4444;
+    --text: #f3f4f6; --text-secondary: #9ca3af;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--text); font-family: "Inter", -apple-system, sans-serif; }
+  .shell { max-width: 1080px; margin: 0 auto; padding: 32px 24px 48px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .sub { color: var(--text-secondary); margin: 0 0 28px; font-size: 14px; }
+  .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin: 32px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  .card { background: var(--elevated); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .card .value { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .card .label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .panel { background: var(--elevated); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-top: 12px; }
+  .btn { background: linear-gradient(135deg, var(--primary), var(--accent)); border: none; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; margin-right: 8px; }
+  .btn.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-secondary); font-weight: 600; }
+  .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .badge.ok { background: rgba(16,185,129,0.15); color: var(--success); }
+  .badge.drift { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .status-line { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.green { background: var(--success); }
+  .dot.red { background: var(--danger); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>Telco Churn — MLOps Dashboard</h1>
+  <p class="sub">GradientBoostingClassifier · tracked in MLflow · served via FastAPI · monitored for feature drift</p>
+
+  <div class="section-title">Model performance (held-out test set)</div>
+  <div class="grid" id="metrics-grid"></div>
+
+  <div class="section-title">Data drift monitor</div>
+  <div class="panel">
+    <div class="status-line"><span id="drift-dot" class="dot green"></span><strong id="drift-status">Checking...</strong></div>
+    <p class="sub" style="margin-bottom:16px">Two-sample KS test comparing each numeric feature's training-time distribution to the current batch. The "simulate shift" button applies a synthetic 40% shift to Monthly Charge / Tenure to demonstrate a genuine detected drift — clearly not real production data.</p>
+    <button class="btn" onclick="runDrift(0.0)">Check real held-out batch</button>
+    <button class="btn secondary" onclick="runDrift(0.4)">Simulate 40% shift</button>
+    <table id="drift-table" hidden>
+      <thead><tr><th>Feature</th><th>KS p-value</th><th>Status</th></tr></thead>
+      <tbody id="drift-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+async function loadMetrics() {
+  const res = await fetch('/monitoring/metrics');
+  const data = await res.json();
+  const m = data.metrics;
+  const grid = document.getElementById('metrics-grid');
+  const cards = [
+    ['Test accuracy', (m.test_accuracy*100).toFixed(1) + '%'],
+    ['Test AUC', m.test_auc.toFixed(4)],
+    ['Test F1', (m.test_f1*100).toFixed(1) + '%'],
+    ['Test recall', (m.test_recall*100).toFixed(1) + '%'],
+  ];
+  grid.innerHTML = cards.map(([label, value]) => `
+    <div class="card"><div class="value">${value}</div><div class="label">${label}</div></div>
+  `).join('');
+}
+
+async function runDrift(shift) {
+  document.getElementById('drift-status').textContent = 'Checking...';
+  const res = await fetch(`/monitoring/drift-demo?shift=${shift}`);
+  const data = await res.json();
+  const dot = document.getElementById('drift-dot');
+  const status = document.getElementById('drift-status');
+  if (data.drift_detected) {
+    dot.className = 'dot red';
+    status.textContent = 'Drift detected — feature distribution has shifted';
+  } else {
+    dot.className = 'dot green';
+    status.textContent = 'No drift detected — distributions match training baseline';
+  }
+  const tbody = document.getElementById('drift-tbody');
+  tbody.innerHTML = data.features.map(f => `
+    <tr><td>${f.feature}</td><td>${f.p_value}</td>
+    <td><span class="badge ${f.drifted ? 'drift' : 'ok'}">${f.drifted ? 'DRIFTED' : 'ok'}</span></td></tr>
+  `).join('');
+  document.getElementById('drift-table').hidden = false;
+}
+
+loadMetrics();
+runDrift(0.0);
+</script>
+</body>
+</html>

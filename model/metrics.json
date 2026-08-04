@@ -1,0 +1,26 @@
+{
+  "run_id": "c0d33cc8ed794c159a1958e60a451910",
+  "params": {
+    "n_estimators": 200,
+    "learning_rate": 0.05,
+    "max_depth": 3,
+    "subsample": 0.9,
+    "random_state": 42
+  },
+  "metrics": {
+    "val_accuracy": 0.9623846699787083,
+    "val_f1": 0.926490984743412,
+    "val_precision": 0.962536023054755,
+    "val_recall": 0.893048128342246,
+    "val_auc": 0.9929396264434628,
+    "test_accuracy": 0.957416607523066,
+    "test_f1": 0.9168975069252078,
+    "test_precision": 0.9511494252873564,
+    "test_recall": 0.8850267379679144,
+    "test_auc": 0.9925650365548064
+  },
+  "train_rows": 4225,
+  "val_rows": 1409,
+  "test_rows": 1409,
+  "num_features": 46
+}

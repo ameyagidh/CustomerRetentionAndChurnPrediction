@@ -1,0 +1,4 @@
+# Only needed to re-download the source dataset (data/*.csv is already bundled,
+# so this is optional unless you want to regenerate the CSVs from Hugging Face).
+datasets==5.0.1
+huggingface_hub
